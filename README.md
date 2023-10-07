@@ -31,3 +31,6 @@ and no auto reload when file change (no need install ``chokidar`` packages)
 ```bash
 php artisan octane:start
 ```
+
+### Compare with fpm
+![img.png](img.png)

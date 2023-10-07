@@ -21,7 +21,7 @@ services:
     container_name: octane_php82
     #    restart: always
     working_dir: /var/www/html/octane-example
-    command: [ "php", "artisan", "octane:start", "--watch", "--port=8000" ]
+    command: [ "php", "artisan", "octane:start", "--watch", "--port=8000"]
     ports:
       - "80:80"
     volumes:
