@@ -14,21 +14,71 @@ services:
       - 8.8.8.8
       - 4.4.4.4
     network_mode: "host"
-  octane_php82:
+  octane_fpm_php82:
+    image: quocdaijr/php-fpm:8.2
+    container_name: octane_fpm_php82
+    #    restart: always
+    working_dir: /var/www/html/octane-example
+    ports:
+      - "9000:9000"
+    volumes:
+      - '.:/var/www/html/octane-example'
+      - './docker/php82/supervisor/conf.d:/etc/supervisor/conf.d'
+      - './docker/php82/supervisor/logs:/var/log/cache'
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+    network_mode: "host"
+  octane_swoole_php82:
     build:
       context: .
       dockerfile: ./docker/php82/swoole/Dockerfile
-    container_name: octane_php82
+    container_name: octane_swoole_php82
     #    restart: always
     working_dir: /var/www/html/octane-example
-    command: [ "php", "artisan", "octane:start", "--watch", "--port=8000"]
+    command: [ "php", "artisan", "octane:start", "--server=swoole", "--watch", "--port=8001"]
     ports:
       - "80:80"
     volumes:
       - '.:/var/www/html/octane-example'
       - './docker/php82/supervisor/conf.d:/etc/supervisor/conf.d'
       - './docker/php82/supervisor/logs:/var/log/cache'
-      - './docker/php82/php-fpm/conf.d/php-ini-overrides.ini:/etc/php/8.2/fpm/conf.d/99-overrides.ini'
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+    network_mode: "host"
+  octane_roadrunner_php82:
+    build:
+      context: .
+      dockerfile: ./docker/php82/roadrunner/Dockerfile
+    container_name: octane_roadrunner_php82
+    #    restart: always
+    working_dir: /var/www/html/octane-example
+    command: [ "php", "artisan", "octane:start", "--server=roadrunner", "--watch", "--port=8002" ]
+    ports:
+      - "80:80"
+    volumes:
+      - '.:/var/www/html/octane-example'
+      - './docker/php82/supervisor/conf.d:/etc/supervisor/conf.d'
+      - './docker/php82/supervisor/logs:/var/log/cache'
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+    network_mode: "host"
+  octane_frankenphp_php82:
+    build:
+      context: .
+      dockerfile: ./docker/php82/frankenphp/Dockerfile
+    container_name: octane_frankenphp_php82
+    #    restart: always
+    working_dir: /var/www/html/octane-example
+    command: [ "php", "artisan", "octane:start", "--server=frankenphp", "--watch", "--port=8003" ]
+    ports:
+      - "80:80"
+    volumes:
+      - '.:/var/www/html/octane-example'
+      - './docker/php82/supervisor/conf.d:/etc/supervisor/conf.d'
+      - './docker/php82/supervisor/logs:/var/log/cache'
     dns:
       - 8.8.8.8
       - 4.4.4.4

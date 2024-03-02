@@ -20,3 +20,10 @@ yarn-error.log
 
 package-lock.json
 composer.lock
+rr
+.rr.yaml
+frankenphp
+!docker/php82/frankenphp
+public/frankenphp-worker.php
+.serverless
+
