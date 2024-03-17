@@ -6,24 +6,27 @@ services:
     volumes:
       - '.:/var/www/html/octane-example'
       - './docker/nginx/conf.d:/etc/nginx/conf.d'
-      - './docker/nginx/logs:/var/log/nginx'
     ports:
       - "80:80"
+      - "8000:8000"
       - "443:443"
     depends_on:
-      - octane_fpm_php82
+      - octane_fpm
+      - octane_fpm_opcache
     dns:
       - 8.8.8.8
       - 4.4.4.4
     networks:
       - octane-network
-  octane_fpm_php82:
+  octane_fpm:
     build:
       context: .
-      dockerfile: ./docker/php82/php-fpm/Dockerfile
-    container_name: octane_fpm_php82
+      dockerfile: ./docker/php83/php-fpm/Dockerfile
+    container_name: octane_fpm
     working_dir: /var/www/html/octane-example
-    command: [ "/usr/sbin/php-fpm8.2", "--force-stderr"]
+    volumes:
+      - "./docker/php83/php-fpm/conf.d/overrides.conf:/etc/php/8.2/fpm/pool.d/zz-overrides.conf"
+    entrypoint: ["sh","-c", "php-fpm"]
     ports:
       - "9000:9000"
     dns:
@@ -31,14 +34,29 @@ services:
       - 4.4.4.4
     networks:
       - octane-network
-  octane_swoole_php82:
+  octane_fpm_opcache:
     build:
       context: .
-      dockerfile: ./docker/php82/swoole/Dockerfile
-    container_name: octane_swoole_php82
-    #    restart: always
+      dockerfile: ./docker/php83/php-fpm-opcache/Dockerfile
+    container_name: octane_fpm_opcache
     working_dir: /var/www/html/octane-example
-    command: [ "php", "artisan", "octane:start", "--server=swoole", "--port=8001", "--workers=4", "--host=0.0.0.0"]
+    volumes:
+      - "./docker/php83/php-fpm-opcache/conf.d/overrides.conf:/etc/php/8.2/fpm/pool.d/zz-overrides.conf"
+    entrypoint: ["sh","-c", "php-fpm"]
+    ports:
+      - "9001:9000"
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+    networks:
+      - octane-network
+  octane_swoole:
+    build:
+      context: .
+      dockerfile: ./docker/php83/swoole/Dockerfile
+    container_name: octane_swoole
+    working_dir: /var/www/html/octane-example
+    entrypoint: [ "php", "artisan", "octane:start", "--server=swoole", "--port=8001", "--workers=16", "--max-requests=1000", "--host=0.0.0.0"]
     ports:
       - "8001:8001"
     dns:
@@ -46,13 +64,13 @@ services:
       - 4.4.4.4
     networks:
       - octane-network
-  octane_roadrunner_php82:
+  octane_openswoole:
     build:
       context: .
-      dockerfile: ./docker/php82/roadrunner/Dockerfile
-    container_name: octane_roadrunner_php82
+      dockerfile: ./docker/php83/swoole/Dockerfile
+    container_name: octane_openswoole
     working_dir: /var/www/html/octane-example
-    command: [ "php", "artisan", "octane:start", "--server=roadrunner", "--port=8002", "--workers=4", "--host=0.0.0.0"]
+    entrypoint: [ "php", "artisan", "octane:start", "--server=swoole", "--port=8002", "--workers=16", "--max-requests=1000", "--host=0.0.0.0"]
     ports:
       - "8002:8002"
     dns:
@@ -60,15 +78,29 @@ services:
       - 4.4.4.4
     networks:
       - octane-network
-  octane_frankenphp_php82:
+  octane_roadrunner:
     build:
       context: .
-      dockerfile: ./docker/php82/frankenphp/Dockerfile
-    container_name: octane_frankenphp_php82
+      dockerfile: ./docker/php83/roadrunner/Dockerfile
+    container_name: octane_roadrunner
     working_dir: /var/www/html/octane-example
-    command: [ "php", "artisan", "octane:start", "--server=frankenphp", "--port=8003", "--workers=4", "--host=0.0.0.0"]
+    entrypoint: [ "php", "artisan", "octane:start", "--server=roadrunner", "--port=8003", "--workers=16", "--max-requests=1000", "--host=0.0.0.0"]
     ports:
       - "8003:8003"
+    dns:
+      - 8.8.8.8
+      - 4.4.4.4
+    networks:
+      - octane-network
+  octane_frankenphp:
+    build:
+      context: .
+      dockerfile: ./docker/php83/frankenphp/Dockerfile
+    container_name: octane_frankenphp
+    working_dir: /var/www/html/octane-example
+    entrypoint: [ "php", "artisan", "octane:start", "--server=frankenphp", "--port=8004", "--workers=16", "--max-requests=1000", "--host=0.0.0.0"]
+    ports:
+      - "8004:8004"
     dns:
       - 8.8.8.8
       - 4.4.4.4

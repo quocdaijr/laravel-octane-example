@@ -23,7 +23,7 @@ composer.lock
 rr
 .rr.yaml
 frankenphp
-!docker/php82/frankenphp
+!docker/php83/frankenphp
 public/frankenphp-worker.php
 .serverless
 
